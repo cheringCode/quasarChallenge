@@ -3,7 +3,6 @@ package com.meli.quasar.controllers;
 import com.meli.quasar.dtos.RequestDTO;
 import com.meli.quasar.dtos.ResponseDTO;
 import com.meli.quasar.dtos.TopSecretRequestDTO;
-import com.meli.quasar.exceptions.QuasarException;
 import com.meli.quasar.model.PositionRequest;
 import com.meli.quasar.services.MessageService;
 import com.meli.quasar.services.PositionService;
