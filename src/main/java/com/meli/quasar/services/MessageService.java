@@ -22,6 +22,11 @@ public class MessageService {
         this.messageMap = new HashMap<>();
     }
 
+    /**
+     * Arma el mensaje a partir de las transmisiones enviadas a cada satelite
+     * @param messages
+     * @return el mensaje
+     */
     public String getMessage(List<List<String>> messages) {
         validarMensajes(messages);
         messages.forEach(message -> {
@@ -34,6 +39,10 @@ public class MessageService {
         return String.join(" ", messageMap.values());
     }
 
+    /**
+     * Valida que los mensajes tengan la misma cantidad de palabras
+     * @param messages
+     */
     private void validarMensajes(List<List<String>> messages) {
         if (messages.isEmpty()) {
             throw new QuasarException(NO_HAY_INFORMACION);
@@ -47,6 +56,11 @@ public class MessageService {
         });
     }
 
+    /**
+     * Este metodo lee de la BD los mensajes enviados por partes en las transmisiones previas y los ensambla para
+     * formar el mensaje final
+     * @return el mensaje de las transmisiones ensamblado
+     */
     public String ensamblarMensajeDeTransmisionesSplit() {
         List<List<String>> listaMensajes = requestService.listarTodosLosMensajesDeTransmisiones();
         return getMessage(listaMensajes);

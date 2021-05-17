@@ -27,11 +27,17 @@ public class PositionService {
     private ModelMapper modelMapper = new ModelMapper();
 
     /**
-     * Calcula la posicion a partir de las transmisiones guardadas de forma separada
+     * Calcula la posicion a partir de las transmisiones guardadas de forma separada en la BD
      * @return
      */
     public Position getPosicionDeTransmisionesSplit() {
         return getPosition(requestService.listarSatelitesYDistancias());
+    }
+
+    private void validarLocationsInput(List<PositionRequest> locationsInput) {
+        if (locationsInput.size() < 3) {
+            throw new IllegalArgumentException("Se necesitan al menos 3 satelites para obtener la posicion.");
+        }
     }
 
     /**
@@ -41,6 +47,7 @@ public class PositionService {
      */
     public Position getPosition(List<PositionRequest> locationsInput) {
         if (!locationsInput.isEmpty()) {
+            validarLocationsInput(locationsInput);
             List<Satelite> satelites = satelitesService.getSatelitesFromDB();
             List<TriangulacionRequest> triangulacionList = new ArrayList<>();
             locationsInput.forEach(input -> {
@@ -67,7 +74,7 @@ public class PositionService {
      * @param triangulacionList
      * @return la posicion de origen
      */
-    protected Position obtenerPosicionPorTresSatelitesMasCercanos(List<TriangulacionRequest> triangulacionList) {
+    private Position obtenerPosicionPorTresSatelitesMasCercanos(List<TriangulacionRequest> triangulacionList) {
         List<TriangulacionRequest> listaOrdenada = triangulacionList.stream().sorted((o1, o2) -> {
             if (o1.getDistance() < o2.getDistance()) {
                 return -1;
@@ -95,7 +102,7 @@ public class PositionService {
      * @param distances array de distancias
      * @return la posicion con sus coordenadas (x, y)
      */
-    protected Position obtenerLocalizacion(double[][] positions, double[] distances) {
+    private Position obtenerLocalizacion(double[][] positions, double[] distances) {
         NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
         Optimum optimum = solver.solve();
         double[] coordenadasCalculadas = optimum.getPoint().toArray();
